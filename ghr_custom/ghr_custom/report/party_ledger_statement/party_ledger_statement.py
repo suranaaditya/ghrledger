@@ -393,10 +393,27 @@ def get_clean_narration(raw_remarks):
 
 def format_balance_number(amount):
 	amount = flt(amount)
-	if not amount:
-		return "0.00"
-	return f"{amount:,.2f}"
 
+	sign = "-" if amount < 0 else ""
+	amount = abs(amount)
+
+	integer_part, decimal_part = f"{amount:.2f}".split(".")
+
+	if len(integer_part) > 3:
+		last_three = integer_part[-3:]
+		remaining = integer_part[:-3]
+
+		parts = []
+		while len(remaining) > 2:
+			parts.insert(0, remaining[-2:])
+			remaining = remaining[:-2]
+
+		if remaining:
+			parts.insert(0, remaining)
+
+		integer_part = ",".join(parts + [last_three])
+
+	return f"{sign}{integer_part}.{decimal_part}"
 
 def cint_like(value):
 	return 1 if str(value) in ("1", "true", "True") else 0
